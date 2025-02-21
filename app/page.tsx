@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import Image from "next/image";
 import enter from "./../public/free-enter-icon-download-in-svg-png-gif-file-formats--arrow-direction-turn-down-left-arrows-pack-sign-symbols-icons-1216131.webp";
-import { detectLanguage, type DetectionResult } from "./actions/detect";
+import { detectLanguage } from "./actions/detect";
 import { translate } from "./actions/translate";
 import { LangDropdown } from "./components/LangDropdown";
 
@@ -21,15 +21,13 @@ export default function Home() {
   const [detectedLang, setDetectedLang] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDetecting, setIsDetecting] = useState(false);
+  const [, setIsLoading] = useState(false);
+  //const [isDetecting, setIsDetecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [charCount, setCharCount] = useState(0);
-  const [detectionResults, setDetectionResults] = useState<
-    DetectionResult[] | null
-  >(null);
+  //const [, setDetectionResults] = useState<DetectionResult[] | null>(null);
   const [showTranslation, setShowTranslation] = useState(false);
-  const [canTranslate, setCanTranslate] = useState(false); // Track if translation can be triggered
+  const [, setCanTranslate] = useState(false); // Track if translation can be triggered
 
   const langToChange = (value: string): void => {
     setLangTo(value);
@@ -43,23 +41,23 @@ export default function Home() {
     setCanTranslate(false); // Reset translate button until Enter is pressed
   };
 
-  const handleDetectLanguage = async () => {
-    if (!text.trim()) return;
-    setIsDetecting(true);
-    setError(null);
-    try {
-      const results = await detectLanguage(text);
-      setDetectionResults(results);
-      if (results && results.length > 0) {
-        setDetectedLang(results[0].language);
-      }
-    } catch (error) {
-      console.error("Language detection failed:", error);
-      setError("Language detection failed. Please try again.");
-    } finally {
-      setIsDetecting(false);
-    }
-  };
+  // const handleDetectLanguage = async () => {
+  //   if (!text.trim()) return;
+  //   setIsDetecting(true);
+  //   setError(null);
+  //   try {
+  //     const results = await detectLanguage(text);
+  //     setDetectionResults(results);
+  //     if (results && results.length > 0) {
+  //       setDetectedLang(results[0].language);
+  //     }
+  //   } catch (error) {
+  //     console.error("Language detection failed:", error);
+  //     setError("Language detection failed. Please try again.");
+  //   } finally {
+  //     setIsDetecting(false);
+  //   }
+  // };
 
   const handleTranslate = async () => {
     if (!text.trim()) {
@@ -177,14 +175,6 @@ export default function Home() {
                 <Image src={enter} alt="Translate" width={24} height={24} />
               </button>
               <div className="flex justify-between items-center mt-1">
-                <button
-                  type="button"
-                  onClick={handleDetectLanguage}
-                  disabled={!text.trim() || isDetecting}
-                  className="px-4 py-2 rounded transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-neutral-700 hover:bg-neutral-600 text-white hover:shadow-md cursor-pointer font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  {isDetecting ? "Detecting..." : "Detect Language"}
-                </button>
                 <span className="text-sm text-gray-500">
                   {charCount}/5000 characters
                 </span>
