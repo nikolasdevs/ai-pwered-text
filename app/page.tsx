@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { detectLanguage, type DetectionResult } from "./actions/detect";
 import { translate } from "./actions/translate";
@@ -77,24 +76,6 @@ export default function Home() {
                   style={{ color: error ? "red" : "inherit" }}
                   tabIndex={0}
                 />
-                {translatedText && (
-                  <CopyToClipboard text={translatedText}>
-                    <button
-                      className="absolute right-2 bottom-2 p-2 bg-blue-500 rounded text-neutral-700 hover:bg-blue-600 transition-colors"
-                      title="Copy to clipboard"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-                      </svg>
-                    </button>
-                  </CopyToClipboard>
-                )}
               </div>
             </div>
             <div className="flex flex-col gap-2">
