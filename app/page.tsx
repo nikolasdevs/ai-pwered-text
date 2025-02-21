@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 
+import Image from "next/image";
+import enter from "./../public/free-enter-icon-download-in-svg-png-gif-file-formats--arrow-direction-turn-down-left-arrows-pack-sign-symbols-icons-1216131.webp";
 import { detectLanguage, type DetectionResult } from "./actions/detect";
 import { translate } from "./actions/translate";
 import { LangDropdown } from "./components/LangDropdown";
@@ -26,6 +28,8 @@ export default function Home() {
   const [detectionResults, setDetectionResults] = useState<
     DetectionResult[] | null
   >(null);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [canTranslate, setCanTranslate] = useState(false); // Track if translation can be triggered
 
   const langToChange = (value: string): void => {
     setLangTo(value);
@@ -35,6 +39,8 @@ export default function Home() {
     const newText = e.target.value;
     setText(newText);
     setCharCount(newText.length);
+    setShowTranslation(false);
+    setCanTranslate(false); // Reset translate button until Enter is pressed
   };
 
   const handleDetectLanguage = async () => {
@@ -55,57 +61,121 @@ export default function Home() {
     }
   };
 
+  const handleTranslate = async () => {
+    if (!text.trim()) {
+      setError("Please enter text to translate");
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    setShowTranslation(false);
+    try {
+      if (!detectedLang) {
+        const detection = await detectLanguage(text);
+        if (detection && detection.length > 0) {
+          setDetectedLang(detection[0].language);
+        } else {
+          throw new Error("Could not detect input language");
+        }
+      }
+      const translation = await translate(text, detectedLang || "en", langTo);
+      setTranslatedText(translation);
+      setShowTranslation(true);
+    } catch (err) {
+      setError(
+        "Translation failed. Please check your internet connection and try again."
+      );
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      setCanTranslate(true); // Enable translation
+    }
+  };
   return (
-    <div className="w-full flex flex-col items-center justify-center bg-neutral-400 h-svh">
+    <div className="w-full flex flex-col items-center justify-center bg-neutral-300 h-svh">
+      <header></header>
       <main className="max-w-7xl m-auto p-8 w-full h-full">
         <form className="flex gap-8 flex-col w-full h-full">
           <div className="flex gap-8 flex-col justify-between h-full">
-            <div className="flex flex-col gap-2 text-neutral-700">
-              <LangDropdown
-                name={langOptions[0].label}
-                value={langTo}
-                onChange={langToChange}
-                options={langOptions}
-              />
-              <div className="relative">
-                <textarea
-                  aria-label="Translated text"
-                  className="w-full h-20 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 text-neutral-700"
-                  value={error ? error : translatedText}
-                  readOnly
-                  style={{ color: error ? "red" : "inherit" }}
-                  tabIndex={0}
-                />
-              </div>
+            <div>
+              {showTranslation && (
+                <div className="flex flex-col gap-2 text-neutral-700 bg-neutral-200 rounded-lg p-6">
+                  <div className=" flex flex-col gap-2">
+                    <textarea
+                      aria-label="Original text"
+                      className="outline-none resize-none bg-transparent text-neutral-500"
+                      value={text}
+                      readOnly
+                      tabIndex={0}
+                    />
+                    {/* show language of the input text */}
+                    <div className="flex gap-2 items-center">
+                      {detectedLang && (
+                        <span className="text-sm text-gray-500">
+                          Detected language: {detectedLang}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="w-16 rounded-xl">
+                        <LangDropdown
+                          name={langOptions[3].label}
+                          value={langTo}
+                          onChange={langToChange}
+                          options={langOptions}
+                          // disabled={!canTranslate} // Disable dropdown until Enter is pressed
+                        />
+                      </div>
+                      <textarea
+                        aria-label="Translated text"
+                        className="w-full h-20 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 text-neutral-600"
+                        value={error ? error : translatedText}
+                        readOnly
+                        style={{ color: error ? "red" : "inherit" }}
+                        tabIndex={0}
+                      />
+                      <span className="text-sm text-gray-500">
+                        Translated to:{" "}
+                        {langOptions.find((l) => l.value === langTo)?.label}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleTranslate}
+                        //disabled={!canTranslate || isLoading} // Ensure it's enabled after Enter is pressed
+                        className="px-4 py-3 rounded transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-neutral-700 hover:bg-neutral-600 text-white hover:shadow-md cursor-pointer font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      >
+                        Translate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 relative">
               <textarea
                 aria-label="Text to translate"
                 className="w-full h-20 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 text-neutral-700"
                 value={text}
                 onChange={handleTextChange}
+                onKeyDown={handleKeyPress}
                 maxLength={5000}
                 tabIndex={0}
               />
-              {detectionResults && (
-                <div className="bg-white p-2 rounded shadow">
-                  <div className=" text-base text-gray-800 mb-2">
-                    Detected Language:{" "}
-                    {detectionResults[0]?.language || "Unknown"}
-                  </div>
-                  {detectionResults.map((result, index) => (
-                    <div
-                      key={index}
-                      className="text-lg font-bold text-blue-700"
-                    >
-                      {
-                        langOptions.find((opt) => opt.value === result.language)
-                          ?.label
-                      }
-                    </div>
-                  ))}
-                </div>
-              )}
+              <button
+                type="button"
+                onClick={handleTranslate}
+                //disabled={!canTranslate || isLoading} // Ensure it's enabled after Enter is pressed
+                className="transition-all flex items-center px-3 focus:outline-none  text-white cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed absolute right-0 bottom-20"
+              >
+                <Image src={enter} alt="Translate" width={24} height={24} />
+              </button>
               <div className="flex justify-between items-center mt-1">
                 <button
                   type="button"
@@ -113,33 +183,7 @@ export default function Home() {
                   disabled={!text.trim() || isDetecting}
                   className="px-4 py-2 rounded transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-neutral-700 hover:bg-neutral-600 text-white hover:shadow-md cursor-pointer font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
-                  {isDetecting ? (
-                    <>
-                      <svg
-                        className="animate-spin h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Detecting...
-                    </>
-                  ) : (
-                    "Detect Language"
-                  )}
+                  {isDetecting ? "Detecting..." : "Detect Language"}
                 </button>
                 <span className="text-sm text-gray-500">
                   {charCount}/5000 characters
@@ -147,76 +191,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <button
-            type="button"
-            aria-label={isLoading ? "Translating..." : "Translate text"}
-            onClick={async () => {
-              if (!text.trim()) {
-                setError("Please enter text to translate");
-                return;
-              }
-              setIsLoading(true);
-              setError(null);
-              try {
-                if (!detectedLang) {
-                  const detection = await detectLanguage(text);
-                  if (detection && detection.length > 0) {
-                    setDetectedLang(detection[0].language);
-                  } else {
-                    throw new Error("Could not detect input language");
-                  }
-                }
-                const translation = await translate(
-                  text,
-                  detectedLang || "en",
-                  langTo
-                );
-                setTranslatedText(translation);
-              } catch (err) {
-                setError(
-                  "Translation failed. Please check your internet connection and try again."
-                );
-                console.error(err);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
-            disabled={isLoading || !text.trim()}
-            className={`px-4 py-3 rounded transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              isLoading
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-neutral-700 hover:bg-neutral-600 text-white hover:shadow-md cursor-pointer font-semibold"
-            }`}
-            tabIndex={0}
-          >
-            {isLoading ? (
-              <>
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Translating...
-              </>
-            ) : (
-              "Translate"
-            )}
-          </button>
         </form>
       </main>
     </div>
