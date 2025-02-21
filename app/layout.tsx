@@ -15,7 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AI Powered Text",
   description: "Translate, detect and summarize your text",
-  icons: "./e-logo.ico",
+  icons: {
+    icon: "./e-logo.ico",
+  },
 };
 
 export default function RootLayout({

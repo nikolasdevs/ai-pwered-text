@@ -111,13 +111,13 @@ export default function Home() {
   };
   return (
     <div className="w-full flex flex-col items-center justify-center bg-neutral-300 h-svh">
-      <header className="my-8 bg-neutral-200 w-full p-4 px-16 text-center shadow-md flex gap-2 items-center  justify-between">
+      <header className="my-8 bg-neutral-200 w-full md:py-4 md:px-16 px-4 text-center shadow-md flex gap-2 items-center  justify-between">
         <Image src={logo} alt="logo" width="64" height="64" />
         <div className=" flex flex-col gap-1 items-end">
-          <h1 className="text-3xl font-semibold text-neutral-600 ">
+          <h1 className="md:text-3xl text-2xl font-semibold text-neutral-600 ">
             AI Powered Text
           </h1>
-          <p className="text-neutral-500 text-sm">
+          <p className="text-neutral-500 md:text-sm text-xs">
             Translate and Summarize Text with Ease
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function Home() {
           <div className="flex gap-8 flex-col justify-between h-full ">
             <div className=" shadow-lg">
               {showTranslation && (
-                <div className="flex flex-col gap-2 text-neutral-700 bg-neutral-200 rounded-lg p-6">
+                <div className="flex flex-col gap-2 text-neutral-700 p-6">
                   <div className=" flex flex-col gap-2">
                     <textarea
                       aria-label="Original text"
@@ -146,15 +146,6 @@ export default function Home() {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                      <button
-                        type="button"
-                        onClick={handleSummarizeText}
-                        disabled={!text.trim() || isLoading}
-                        className="px-4 py-2 rounded transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-neutral-500 bg-neutral-700 hover:bg-neutral-600 text-white hover:shadow-md cursor-pointer font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
-                      >
-                        {isLoading ? "Summarizing..." : "Summarize"}
-                      </button>
-
                       {summary && summary.length > 0 && (
                         <div className="bg-white p-2 rounded shadow">
                           <div className="font-medium text-sm text-gray-700">
@@ -163,17 +154,34 @@ export default function Home() {
                           <div className="text-sm text-gray-900">{summary}</div>
                         </div>
                       )}
-                      <div className=" my-4 ">
+                      <div className=" ">
                         <LangDropdown
                           name="Target Language"
                           value={langTo}
                           onChange={langToChange}
                           options={langOptions}
                         />
+                      </div>{" "}
+                      <div className="flex items-center gap-8 my-4">
+                        <button
+                          type="button"
+                          onClick={handleTranslate}
+                          className="px-4 py-2 rounded transition-all flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-neutral-500 bg-neutral-700 hover:bg-neutral-600 text-white hover:shadow-md cursor-pointer font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        >
+                          Translate
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleSummarizeText}
+                          disabled={!text.trim() || isLoading}
+                          className="px-4 py-2 rounded transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-neutral-500 bg-neutral-700 hover:bg-neutral-600 text-white hover:shadow-md cursor-pointer font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        >
+                          {isLoading ? "Summarizing..." : "Summarize"}
+                        </button>
                       </div>
                       <p
                         aria-label="Translated text"
-                        className="w-full px-3 py-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 text-neutral-600  bg-transparent border border-neutral-400"
+                        className="w-full px-3 py-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 text-neutral-600  bg-transparent border border-neutral-400 fade-in fade-in-active"
                         style={{ color: "inherit" }}
                         tabIndex={0}
                       >
@@ -183,30 +191,26 @@ export default function Home() {
                         Translated to:{" "}
                         {langOptions.find((l) => l.value === langTo)?.label}
                       </span>
-                      <button
-                        type="button"
-                        onClick={handleTranslate}
-                        className="px-4 py-3 rounded transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-neutral-500 bg-neutral-700 hover:bg-neutral-600 text-white hover:shadow-md cursor-pointer font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed mt-10"
-                      >
-                        Translate
-                      </button>
                     </div>
                   </div>
                 </div>
               )}
             </div>
             <div className="flex flex-col gap-2 relative justify-center">
-              <div className="flex items-center w-full justify-between">
+              <div className="flex items-center w-full justify-between text-sm">
                 <p className="text-neutral-500">Input Text</p>
-                {error && <span className=" text-red-500">{error}</span>}
+                {error && (
+                  <span className=" text-red-500 hidden md:block">{error}</span>
+                )}
 
-                <span className="text-sm text-gray-500">
-                  Press Enter to translate
-                </span>
-              </div>
+                <p className=" text-gray-500">Press Enter to translate</p>
+              </div>{" "}
+              {error && (
+                <span className=" text-red-500 md:hidden text-sm">{error}</span>
+              )}
               <textarea
                 aria-label="Text to translate"
-                className="items-center w-full border border-neutral-400 rounded resize-none focus:outline-none focus:ring-1 focus:ring-gray-500 text-neutral-700 bg-transparent ps-4 pt-5 px-16"
+                className="items-center w-full border border-neutral-400 h-32 rounded resize-none focus:outline-none focus:ring-1 focus:ring-gray-500 text-neutral-700 bg-transparent ps-4 pt-5 px-16"
                 value={text}
                 onChange={handleTextChange}
                 onKeyDown={handleKeyPress}
@@ -216,11 +220,10 @@ export default function Home() {
               <button
                 type="button"
                 onClick={handleTranslate}
-                className="transition-all flex items-center justify-center p-2 focus:outline-none text-white cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed absolute right-2 top-1/2 transform  -translate-y-1/2  hover-shadow-1 bg-transparent hover:shadow-md"
+                className="transition-all flex items-center justify-center p-2 focus:outline-none cursor-pointer absolute right-2 top-1/2 transform  -translate-y-1/2  hover-shadow-1 bg-transparent hover:shadow-md"
               >
                 <Image src={enter} alt="Translate" width={24} height={24} />
               </button>
-
               <div className="flex justify-between items-center mt-1">
                 <span className="text-sm text-gray-500">
                   {charCount}/5000 characters
