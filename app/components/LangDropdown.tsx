@@ -17,7 +17,7 @@ export const LangDropdown: React.FC<LangDropdownProps> = ({
       name={name}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="p-1 outline-none"
+      className="p-1 outline-none bg-neutral-200 border border-neutral-400 rounded"
     >
       {options.map((option, index) => (
         <option key={`${name}_${index}`} value={option.value}>
