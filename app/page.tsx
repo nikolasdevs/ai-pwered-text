@@ -56,11 +56,11 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center bg-purple-200 h-svh">
+    <div className="w-full flex flex-col items-center justify-center bg-neutral-400 h-svh">
       <main className="max-w-7xl m-auto p-8 w-full h-full">
         <form className="flex gap-8 flex-col w-full h-full">
           <div className="flex gap-8 flex-col justify-between h-full">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 text-neutral-700">
               <LangDropdown
                 name={langOptions[0].label}
                 value={langTo}
@@ -70,7 +70,7 @@ export default function Home() {
               <div className="relative">
                 <textarea
                   aria-label="Translated text"
-                  className="w-full h-20 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-neutral-700"
+                  className="w-full h-20 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 text-neutral-700"
                   value={error ? error : translatedText}
                   readOnly
                   style={{ color: error ? "red" : "inherit" }}
@@ -81,7 +81,7 @@ export default function Home() {
             <div className="flex flex-col gap-2">
               <textarea
                 aria-label="Text to translate"
-                className="w-full h-20 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-neutral-700"
+                className="w-full h-20 p-3 rounded resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 text-neutral-700"
                 value={text}
                 onChange={handleTextChange}
                 maxLength={5000}
