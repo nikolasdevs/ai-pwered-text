@@ -97,7 +97,11 @@ export default function Home() {
   };
   return (
     <div className="w-full flex flex-col items-center justify-center bg-neutral-300 h-svh">
-      <header></header>
+      <header className="my-8 bg-neutral-200 w-full p-4 text-center">
+        <h1 className="text-4xl font-semibold text-neutral-600">
+          Translate Text
+        </h1>
+      </header>
       <main className="max-w-7xl m-auto p-8 w-full h-full">
         <form className="flex gap-8 flex-col w-full h-full">
           <div className="flex gap-8 flex-col justify-between h-full">
@@ -128,7 +132,6 @@ export default function Home() {
                           value={langTo}
                           onChange={langToChange}
                           options={langOptions}
-                          // disabled={!canTranslate} // Disable dropdown until Enter is pressed
                         />
                       </div>
                       <textarea
