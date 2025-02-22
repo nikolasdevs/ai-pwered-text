@@ -125,9 +125,9 @@ export default function Home() {
       <main className="max-w-7xl m-auto p-8 w-full h-full">
         <form className="flex gap-8 flex-col w-full h-full">
           <div className="flex gap-8 flex-col justify-between h-full ">
-            <div className=" shadow-lg">
+            <div className=" shadow-lg w-full flex justify-end">
               {showTranslation && (
-                <div className="flex flex-col gap-2 text-neutral-700 p-6">
+                <div className="flex flex-col gap-2 text-neutral-700 p-6 w-[30%]">
                   <div className=" flex flex-col gap-2">
                     <textarea
                       aria-label="Original text"
